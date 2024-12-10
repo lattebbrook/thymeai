@@ -330,13 +330,10 @@ public class ImageToVideoService {
                 if (runwayResponse.getOutput() != null && !runwayResponse.getOutput().isEmpty()) {
                     outputUrl = runwayResponse.getOutput().get(0); // Get the first URL
                     System.out.println("Generated Video URL: " + outputUrl);
-                    // Process the output (e.g., send to user, store, etc.)
+                    return queue.poll();
                 } else {
                     System.out.println("No output found in response.");
                 }
-
-                // Remove processed item from queue
-                queue.poll();
 
             } catch (Exception e) {
                 System.err.println("Error processing video for UserId: " + queue.peek().getId());
