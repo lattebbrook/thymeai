@@ -254,7 +254,7 @@ public class ImageToVideoService {
         Map<String, Object> message = new HashMap<>();
         message.put("type", "video");
         message.put("originalContentUrl", userData.getVideoId());
-        message.put("previewImageUrl", userData.getUserImagePrompt());
+        message.put("previewImageUrl", "https://www.brightpay.co.uk/i/play-video-5x3.png");
         message.put("trackingId", "track-id"); // Optional, add if required
 
         Map<String, Object> body = new HashMap<>();
