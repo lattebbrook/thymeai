@@ -119,7 +119,7 @@ public class ImageToVideoService {
                 userData.setState(STATE_PROCESS);
                 // send userdata into business process
                 postToRunwayService(index, userData);
-                return "ได้รับข้อมูลแล้วครบถ้วนทั้งรูปภาพและ Prompt แล้วคร๊าบ รบกวนพี่ๆ รอไม่เกิน 45 วินาทีนะคร๊าบบบ... หรือหากต้องการยกเลิกให้พิมพ์ #STOP";
+                return "ได้รับข้อมูลแล้วครบถ้วนทั้งรูปภาพและ Prompt แล้วคร๊าบ รบกวนรอ 45-50 วินาที นะคร๊าบบบ... หรือหากต้องการยกเลิกให้พิมพ์ #STOP";
             }
         } catch (Exception e) {
             System.err.println("Cannot send request to runway due to exception");
