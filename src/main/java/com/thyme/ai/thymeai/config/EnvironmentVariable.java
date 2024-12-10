@@ -4,7 +4,7 @@ public class EnvironmentVariable {
 
     //token, api access
     public static final String RUNWAY_ML_TOKEN = System.getenv("RUNWAY_ML_TOKEN");
-    //public static final String LINE_BOT_CHANNEL_TOKEN = System.getenv("LINE_BOT_CHANNEL_TOKEN");
+    public static final String LINE_BOT_CHANNEL_TOKEN = System.getenv("LINE_BOT_CHANNEL_TOKEN");
     //public static final String LINE_BOT_CHANNEL_SECRET = System.getenv("LINE_BOT_CHANNEL_SECRET");
 
     //cdn url

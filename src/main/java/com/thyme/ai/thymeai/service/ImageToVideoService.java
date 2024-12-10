@@ -8,10 +8,8 @@ import com.thyme.ai.thymeai.config.EnvironmentVariable;
 import com.thyme.ai.thymeai.model.RunwayRequest;
 import com.thyme.ai.thymeai.model.RunwayResponse;
 import com.thyme.ai.thymeai.model.UserData;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -31,10 +29,14 @@ public class ImageToVideoService {
     private static final String STATE_PROCESS = "PROCESS";
     private static final String STATE_DONE = "DONE";
 
-    private LinkedList<UserData> userDataArr = new LinkedList<>();
+    private static final String runwayAPIUrlEndPoint = "https://api.dev.runwayml.com/v1/image_to_video";
+    private static final String LineAPICDNEndPoint = "https://api-data.line.me/v2/bot/message/";
+
+    private ArrayList<UserData> userDataArr = new ArrayList<>();
 
     public String process(MessageEvent messageEvent, ImageMessageContent imageMessageContent, TextMessageContent textMessage) {
         String id = messageEvent.source().userId();
+        String messageId = messageEvent.message().id();
         String contentType = imageMessageContent == null ? "text" : "image";
 
         String userTextPrompt;
@@ -76,14 +78,15 @@ public class ImageToVideoService {
                 return "ขออภัยด้วยนะครับ เนื่องจากน้องได้รับรูปภาพแล้ว จึงขอให้พี่ช่วยส่ง Prompt ที่ต้องการ Animate รูปภาพนี้มาได้มั้ยคร๊าบ";
             }
 
-            userImagePrompt = "++";
+            userImagePrompt = getPhotoAsBase64(messageEvent.message().id());
 
             if (userData == null) {
                 System.out.println("userData is null at image");
-                userData = new UserData(id, false, STATE_IMAGE, "", "", "", "");
+                userData = new UserData(id, false, "", "", "", "", ""); // can use builder
             }
 
             userData.setUserImagePrompt(userImagePrompt);
+            userData.setState(STATE_IMAGE);
             isImageAttached = true;
         } else {
 
@@ -96,10 +99,11 @@ public class ImageToVideoService {
             System.out.println("textPrompt : " + userTextPrompt);
 
             if(userData == null) {
-                userData = new UserData(id, false, STATE_TEXT, "", "", "", "");
+                userData = new UserData(id, false, "", "", "", "", ""); // can use builder
             }
 
             userData.setUserTextPrompt(userTextPrompt);
+            userData.setState(STATE_TEXT);
         }
 
         try {
@@ -152,15 +156,13 @@ public class ImageToVideoService {
         runwayRequest.setPromptText(userData.getUserTextPrompt());
         runwayRequest.setPromptImage(userData.getUserImagePrompt());
 
-        String apiUrl = "https://api.dev.runwayml.com/v1/image_to_video";
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + EnvironmentVariable.RUNWAY_ML_TOKEN);
         headers.set("X-Runway-Version", "2024-11-06");
 
         HttpEntity<RunwayRequest> entity = new HttpEntity<>(runwayRequest, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, entity, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(runwayAPIUrlEndPoint, entity, String.class);
         ResponseEntity.ok(response.getBody());
 
         // Parse response with JsonPath
@@ -176,7 +178,100 @@ public class ImageToVideoService {
         }
     }
 
+    public String getPhotoAsBase64(String messageId) {
+        try {
+            // Construct the URL
+            String apiUrl = "https://api-data.line.me/v2/bot/message/" + messageId + "/content";
+
+            // Set headers for authorization
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + EnvironmentVariable.LINE_BOT_CHANNEL_TOKEN);
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+            // Create the request entity
+            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
+            // Make the API call
+            ResponseEntity<byte[]> response = restTemplate.exchange(
+                    apiUrl,
+                    HttpMethod.GET,
+                    requestEntity,
+                    byte[].class
+            );
+
+            // Check if the response is successful
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                // Convert the byte array to Base64
+                byte[] photoBytes = response.getBody();
+                return Base64.encodeBase64String(photoBytes);
+            } else {
+                System.err.println("Failed to fetch photo. Status Code: " + response.getStatusCode());
+                return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Error fetching photo: " + e.getMessage());
+            return null;
+        }
+    }
+
     @Scheduled(cron = "*/45 * * * * *") // Every 45 seconds
+    public void pushNotification(){
+
+        UserData userData = postProcessingFunction();
+
+        if(userData == null) {
+            return;
+        }
+
+        int index = 0;
+        for(int i = 0; i < userDataArr.size(); i++) {
+            if(userDataArr.get(i).getId().equals(userData.getId())) {
+                index = i;
+                userData.setState(STATE_DONE);
+                break;
+            }
+        }
+
+        userDataArr.set(index, userData);
+
+        // Prepare HTTP headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        headers.set("Authorization", "Bearer " + System.getenv("LINE_BOT_CHANNEL_TOKEN"));
+
+        // Prepare the request body
+        Map<String, Object> message = new HashMap<>();
+        message.put("type", "video");
+        message.put("originalContentUrl", userData.getVideoId());
+        message.put("previewImageUrl", userData.getUserImagePrompt());
+        message.put("trackingId", "track-id"); // Optional, add if required
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("to", userData.getId());
+        body.put("messages", new Map[]{message});
+
+        // Wrap in HttpEntity
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+        // SEND POST REQUEST ==>
+        ResponseEntity<String> response = restTemplate.exchange(
+                "https://api.line.me/v2/bot/message/push",
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
+
+        // Handle response
+        if (response.getStatusCode().is2xxSuccessful()) {
+            System.out.println("Push notification sent successfully: " + response.getBody());
+        } else {
+            System.err.println("Failed to send push notification: " + response.getBody());
+        }
+
+        userDataArr.remove(index);
+    }
+
     public UserData postProcessingFunction(){
         Queue<UserData> queue = new LinkedList<>();
         userDataArr.forEach(i -> {
@@ -192,7 +287,7 @@ public class ImageToVideoService {
 
         while(!queue.isEmpty()) {
             String outputUrl = "";
-            String apiUrl = "https://api.dev.runwayml.com/v1/image_to_video/" + queue.peek().getVideoId();
+            String apiUrl = runwayAPIUrlEndPoint + "/" + queue.peek().getVideoId();
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -234,4 +329,5 @@ public class ImageToVideoService {
         // for demo only
         return null;
     }
+
 }
