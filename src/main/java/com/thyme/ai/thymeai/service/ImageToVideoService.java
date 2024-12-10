@@ -296,29 +296,32 @@ public class ImageToVideoService {
             return null;
         }
 
-        while(!queue.isEmpty()) {
-            System.out.println("[DEBUG] FOUND DATA TO PROCESS IN QUEUE ==> " + queue.peek() + " TIME :: " + LocalDateTime.now());
+        while (!queue.isEmpty()) {
+            System.out.println("[DEBUG] FOUND DATA TO PROCESS IN QUEUE ==> " + queue.peek().getVideoId() + ", " + queue.peek().getUserTextPrompt() + " TIME :: " + LocalDateTime.now());
             String outputUrl = "";
             String apiUrl = runwayAPIUrlEndPoint + "/" + queue.peek().getVideoId();
 
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("Authorization", "Bearer " + EnvironmentVariable.RUNWAY_ML_TOKEN);
             headers.set("X-Runway-Version", "2024-11-06");
 
-            HttpEntity<RunwayRequest> entity = new HttpEntity<>(headers);
-            ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, entity, String.class);
-            ResponseEntity.ok(response.getBody());
-
-            // Parse the response to extract "output"
-            ObjectMapper objectMapper = new ObjectMapper();
-            RunwayResponse runwayResponse;
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
 
             try {
-                // Map JSON response to RunwayResponse DTO
-                runwayResponse = objectMapper.readValue(response.getBody(), RunwayResponse.class);
+                // Use GET instead of POST
+                ResponseEntity<String> response = restTemplate.exchange(
+                        apiUrl,
+                        HttpMethod.GET,
+                        entity,
+                        String.class
+                );
 
-                if(!runwayResponse.getStatus().equals("SUCCEEDED")) {
+                // Parse the response
+                ObjectMapper objectMapper = new ObjectMapper();
+                RunwayResponse runwayResponse = objectMapper.readValue(response.getBody(), RunwayResponse.class);
+
+                if (!runwayResponse.getStatus().equals("SUCCEEDED")) {
+                    System.out.println("[DEBUG] Video generation not completed yet for ID: " + queue.peek().getVideoId());
                     return null;
                 }
 
@@ -326,15 +329,18 @@ public class ImageToVideoService {
                 if (runwayResponse.getOutput() != null && !runwayResponse.getOutput().isEmpty()) {
                     outputUrl = runwayResponse.getOutput().get(0); // Get the first URL
                     System.out.println("Generated Video URL: " + outputUrl);
-                    // process it send to user
+                    // Process the output (e.g., send to user, store, etc.)
                 } else {
                     System.out.println("No output found in response.");
                 }
 
-                // call to push notification eventHandler
-                return queue.poll();
+                // Remove processed item from queue
+                queue.poll();
+
             } catch (Exception e) {
-                System.err.println("Error parsing response: " + e.getMessage());
+                System.err.println("Error processing video for UserId: " + queue.peek().getId());
+                e.printStackTrace();
+                queue.poll();
             }
         }
 
