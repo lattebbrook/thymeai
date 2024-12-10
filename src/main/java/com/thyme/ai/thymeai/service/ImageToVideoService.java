@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.jayway.jsonpath.JsonPath;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -110,7 +111,7 @@ public class ImageToVideoService {
             if(!userData.getUserImagePrompt().isEmpty() && !userData.getUserTextPrompt().isEmpty()) {
                 userData.setState(STATE_PROCESS);
                 // send userdata into business process
-                postToRunwayService(index, userData);
+                // postToRunwayService(index, userData);
                 return "ได้รับข้อมูลแล้วครบถ้วนทั้งรูปภาพและ Prompt แล้วคร๊าบ รบกวนพี่ๆ รอไม่เกิน 45 วินาทีนะคร๊าบบบ... (กำลังประมวลผล)";
             }
         } catch (Exception e) {
@@ -124,7 +125,7 @@ public class ImageToVideoService {
             userDataArr.add(userData);
         }
 
-        return isImageAttached ? "ได้รับข้อมูลรูปภาพแล้วคร๊าบบบ รบกวนเขียน Prompt ให้น้องหน่อยน๊า" : "ขอบคุณคร๊าบบ รบกวนแนบรูปภาพให้น้อง AI ด้วยนะครับ";
+        return isImageAttached ? "ได้รับข้อมูลรูปภาพแล้วคร๊าบบบ" : "ขอบคุณคร๊าบบ รบกวนแนบรูปภาพให้น้อง AI ด้วยนะครับ";
     }
 
     public String clearProcess(String userId){
@@ -282,10 +283,12 @@ public class ImageToVideoService {
 
         if(queue.isEmpty()) {
             // for demo only
+            System.out.println("[DEBUG] ===> QUEUE IS EMPTY, TIME: " + LocalDateTime.now());
             return null;
         }
 
         while(!queue.isEmpty()) {
+            System.out.println("[DEBUG] FOUND DATA TO PROCESS IN QUEUE ==> " + queue.peek() + " TIME :: " + LocalDateTime.now());
             String outputUrl = "";
             String apiUrl = runwayAPIUrlEndPoint + "/" + queue.peek().getVideoId();
 

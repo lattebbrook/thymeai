@@ -8,6 +8,7 @@ import com.linecorp.bot.spring.boot.handler.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.handler.annotation.LineMessageHandler;
 import com.linecorp.bot.webhook.model.ImageMessageContent;
 import com.linecorp.bot.webhook.model.MessageEvent;
+import com.linecorp.bot.webhook.model.Source;
 import com.linecorp.bot.webhook.model.TextMessageContent;
 import com.thyme.ai.thymeai.model.UserData;
 import com.thyme.ai.thymeai.model.UserEvent;
