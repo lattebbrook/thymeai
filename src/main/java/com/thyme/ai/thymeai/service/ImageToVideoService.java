@@ -76,14 +76,15 @@ public class ImageToVideoService {
 
             if (userData != null && !userData.getUserImagePrompt().isEmpty()) {
                 System.out.println("Please add TEXT prompt because you are already add Image or type CANCEL to clear operation.");
-                return "ขออภัยด้วยนะครับ เนื่องจากน้องได้รับรูปภาพแล้ว จึงขอให้พี่ช่วยส่ง Prompt ที่ต้องการ Animate รูปภาพนี้มาได้มั้ยคร๊าบ";
+                return "ขออภัยด้วยนะครับ เนื่องจากน้องได้รับรูปภาพแล้ว ขอให้พี่ช่วยส่ง Prompt ที่ต้องการ Animate รูปภาพนี้มาได้มั้ยคร๊าบ";
             }
 
             userImagePrompt = getPhotoAsBase64(messageEvent.message().id());
+            System.out.println(userImagePrompt == null ? "====> PHOTO CONVERT BASE64 SUCCESSFULLY" : "[ERROR]: USER IMAGE PROMPT IS NULL!");
 
             if (userData == null) {
                 System.out.println("userData is null at image");
-                userData = new UserData(id, false, "", "", "", "", ""); // can use builder
+                userData = new UserData(id, false, "", "", "", "", "");
             }
 
             userData.setUserImagePrompt(userImagePrompt);
@@ -93,7 +94,7 @@ public class ImageToVideoService {
 
             if (userData != null && !userData.getUserTextPrompt().isEmpty()) {
                 System.out.println("Please add IMAGE reference because you are already add Text or type CANCEL to clear operation.");
-                return "ขออภัยด้วยนะครับ เนื่องจากน้องได้รับ Prompt แล้ว จึงขอให้พี่ช่วยส่งรูปภาพที่ต้องการ Animate มาได้มั้ยคร๊าบ";
+                return "ขออภัยด้วยนะครับ เนื่องจากน้องได้รับ Prompt แล้ว ขอให้พี่ช่วยส่งรูปภาพที่ต้องการ Animate มาได้มั้ยคร๊าบ";
             }
 
             userTextPrompt = textMessage.text();
