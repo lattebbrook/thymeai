@@ -330,6 +330,7 @@ public class ImageToVideoService {
                 if (runwayResponse.getOutput() != null && !runwayResponse.getOutput().isEmpty()) {
                     outputUrl = runwayResponse.getOutput().get(0); // Get the first URL
                     System.out.println("Generated Video URL: " + outputUrl);
+                    queue.peek().setVideoUrl(outputUrl);
                     return queue.poll();
                 } else {
                     System.out.println("No output found in response.");
