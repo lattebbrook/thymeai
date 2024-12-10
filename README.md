@@ -5,7 +5,7 @@
   <img src="https://github.com/lattebbrook/thymeai/blob/main/logo.png" width="900" height="340">
 </p>
 <p>
-  <h3>What Thyme AI:</h3>
+  <h3>What's Thyme AI:</h3>
   LINE Messaging API that utilizes Springboot and RunwayML Gen 3 Turbo Image-To-Video generation for any kind of content (Image to Video Only).<br><br>
   <h3>Purpose:</h3>
   Demo project show case the use of Springboot, LINE Messaging API and Generative AI.
