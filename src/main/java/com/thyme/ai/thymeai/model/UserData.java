@@ -14,5 +14,6 @@ public class UserData {
     private String state;
     private String userImagePrompt;
     private String userTextPrompt;
-
+    private String videoId;
+    private String videoUrl;
 }

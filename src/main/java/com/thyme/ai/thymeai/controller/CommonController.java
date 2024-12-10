@@ -1,6 +1,5 @@
 package com.thyme.ai.thymeai.controller;
 
-import com.thyme.ai.thymeai.config.CDNSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
