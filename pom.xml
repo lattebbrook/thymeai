@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.4.0</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.thyme.ai</groupId>
+	<artifactId>thymeai</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>thymeai</name>
+	<description>Demo project for springboot integrate with AI and LINE Messaging API</description>
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+	<properties>
+		<java.version>17</java.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+			<version>RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+			<!-- LINE Bot Messaging API Client -->
+			<dependency>
+				<groupId>com.linecorp.bot</groupId>
+				<artifactId>line-bot-messaging-api-client</artifactId>
+				<version>9.3.1</version>
+			</dependency>
+
+			<!-- LINE Bot Insight Client -->
+			<dependency>
+				<groupId>com.linecorp.bot</groupId>
+				<artifactId>line-bot-insight-client</artifactId>
+				<version>9.3.1</version>
+			</dependency>
+
+			<!-- LINE Bot Manage Audience Client -->
+			<dependency>
+				<groupId>com.linecorp.bot</groupId>
+				<artifactId>line-bot-manage-audience-client</artifactId>
+				<version>9.3.1</version>
+			</dependency>
+
+			<!-- LINE Bot Module Attach Client -->
+			<dependency>
+				<groupId>com.linecorp.bot</groupId>
+				<artifactId>line-bot-module-attach-client</artifactId>
+				<version>9.3.1</version>
+			</dependency>
+
+			<!-- LINE Bot Module Client -->
+			<dependency>
+				<groupId>com.linecorp.bot</groupId>
+				<artifactId>line-bot-module-client</artifactId>
+				<version>9.3.1</version>
+			</dependency>
+
+			<!-- LINE Bot Shop Client -->
+			<dependency>
+				<groupId>com.linecorp.bot</groupId>
+				<artifactId>line-bot-shop-client</artifactId>
+				<version>9.3.1</version>
+			</dependency>
+
+			<!-- LINE Channel Access Token Client -->
+			<dependency>
+				<groupId>com.linecorp.bot</groupId>
+				<artifactId>line-channel-access-token-client</artifactId>
+				<version>9.3.1</version>
+			</dependency>
+
+			<!-- LINE LIFF Client -->
+			<dependency>
+				<groupId>com.linecorp.bot</groupId>
+				<artifactId>line-liff-client</artifactId>
+				<version>9.3.1</version>
+			</dependency>
+
+			<!-- LINE Bot Webhook -->
+			<dependency>
+				<groupId>com.linecorp.bot</groupId>
+				<artifactId>line-bot-webhook</artifactId>
+				<version>9.3.1</version>
+			</dependency>
+
+			<!-- LINE Bot Spring Boot Web MVC -->
+			<dependency>
+				<groupId>com.linecorp.bot</groupId>
+				<artifactId>line-bot-spring-boot-webmvc</artifactId>
+				<version>9.3.1</version>
+			</dependency>
+
+			<!-- LINE Bot Spring Boot Client -->
+			<dependency>
+				<groupId>com.linecorp.bot</groupId>
+				<artifactId>line-bot-spring-boot-client</artifactId>
+				<version>9.3.1</version>
+			</dependency>
+
+		<dependency>
+			<groupId>com.linecorp.bot</groupId>
+			<artifactId>line-bot-spring-boot-handler</artifactId>
+			<version>9.3.1</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<finalName>thyme-ai</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.20</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
