@@ -117,7 +117,7 @@ public class ImageToVideoService {
             if(!userData.getUserImagePrompt().isEmpty() && !userData.getUserTextPrompt().isEmpty()) {
                 userData.setState(STATE_PROCESS);
                 // send userdata into business process
-                // postToRunwayService(index, userData);
+                postToRunwayService(index, userData);
                 return "ได้รับข้อมูลแล้วครบถ้วนทั้งรูปภาพและ Prompt แล้วคร๊าบ รบกวนพี่ๆ รอไม่เกิน 45 วินาทีนะคร๊าบบบ... (กำลังประมวลผล)";
             }
         } catch (Exception e) {
