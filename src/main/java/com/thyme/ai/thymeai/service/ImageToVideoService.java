@@ -9,6 +9,7 @@ import com.thyme.ai.thymeai.model.RunwayRequest;
 import com.thyme.ai.thymeai.model.RunwayResponse;
 import com.thyme.ai.thymeai.model.UserData;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,8 +23,12 @@ import java.util.*;
 @Service
 public class ImageToVideoService {
 
+    private final RestTemplate restTemplate;
 
-    private RestTemplate restTemplate;
+    @Autowired
+    public ImageToVideoService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     private static final String STATE_IMAGE = "IMAGE";
     private static final String STATE_TEXT = "TEXT";
@@ -80,7 +85,7 @@ public class ImageToVideoService {
             }
 
             userImagePrompt = getPhotoAsBase64(messageEvent.message().id());
-            System.out.println(userImagePrompt == null ? "====> PHOTO CONVERT BASE64 SUCCESSFULLY" : "[ERROR]: USER IMAGE PROMPT IS NULL!");
+            System.out.println(userImagePrompt != null ? "====> PHOTO CONVERT BASE64 SUCCESSFULLY" : "[ERROR]: USER IMAGE PROMPT IS NULL!");
 
             if (userData == null) {
                 System.out.println("userData is null at image");
