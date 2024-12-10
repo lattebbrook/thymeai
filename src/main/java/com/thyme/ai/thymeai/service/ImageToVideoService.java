@@ -210,7 +210,10 @@ public class ImageToVideoService {
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 // Convert the byte array to Base64
                 byte[] photoBytes = response.getBody();
-                return Base64.encodeBase64String(photoBytes);
+
+                // Prepend the MIME type prefix to the Base64 string
+                String base64Image = Base64.encodeBase64String(photoBytes);
+                return "data:image/jpeg;base64," + base64Image; // Adjust to image type (e.g., png, jpeg)
             } else {
                 System.err.println("Failed to fetch photo. Status Code: " + response.getStatusCode());
                 return null;
