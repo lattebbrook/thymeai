@@ -36,6 +36,7 @@ public class ImageToVideoService {
     private static final String STATE_DONE = "DONE";
 
     private static final String runwayAPIUrlEndPoint = "https://api.dev.runwayml.com/v1/image_to_video";
+    private static final String runwayAPICDNEndPoint = "https://api.dev.runwayml.com/v1/tasks/";
     private static final String LineAPICDNEndPoint = "https://api-data.line.me/v2/bot/message/";
 
     private ArrayList<UserData> userDataArr = new ArrayList<>();
@@ -299,7 +300,7 @@ public class ImageToVideoService {
         while (!queue.isEmpty()) {
             System.out.println("[DEBUG] FOUND DATA TO PROCESS IN QUEUE ==> " + queue.peek().getVideoId() + ", " + queue.peek().getUserTextPrompt() + " TIME :: " + LocalDateTime.now());
             String outputUrl = "";
-            String apiUrl = runwayAPIUrlEndPoint + "/" + queue.peek().getVideoId();
+            String apiUrl = runwayAPICDNEndPoint + queue.peek().getVideoId();
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + EnvironmentVariable.RUNWAY_ML_TOKEN);
