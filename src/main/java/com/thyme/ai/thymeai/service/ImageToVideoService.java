@@ -72,7 +72,7 @@ public class ImageToVideoService {
         if(userData != null && userData.getState().equalsIgnoreCase(STATE_PROCESS)) {
             // return false and log still process please wait
             System.err.println("still process please wait");
-            return "ขออภัยจ้า ตอนนี้น้อง AI กำลังทำการ Process อยู่นะคร๊าบ";
+            return "ขออภัยจ้า ตอนนี้น้อง AI กำลังทำการ Process อยู่นะคร๊าบ หากต้องการยกเลิกพิมพ์ #STOP ได้เลยครับ";
         }
 
         /** if not then send request to runway */
@@ -119,7 +119,7 @@ public class ImageToVideoService {
                 userData.setState(STATE_PROCESS);
                 // send userdata into business process
                 postToRunwayService(index, userData);
-                return "ได้รับข้อมูลแล้วครบถ้วนทั้งรูปภาพและ Prompt แล้วคร๊าบ รบกวนพี่ๆ รอไม่เกิน 45 วินาทีนะคร๊าบบบ... (กำลังประมวลผล)";
+                return "ได้รับข้อมูลแล้วครบถ้วนทั้งรูปภาพและ Prompt แล้วคร๊าบ รบกวนพี่ๆ รอไม่เกิน 45 วินาทีนะคร๊าบบบ... หรือหากต้องการยกเลิกให้พิมพ์ #STOP";
             }
         } catch (Exception e) {
             System.err.println("Cannot send request to runway due to exception");
@@ -132,7 +132,7 @@ public class ImageToVideoService {
             userDataArr.add(userData);
         }
 
-        return isImageAttached ? "ได้รับข้อมูลรูปภาพแล้วคร๊าบบบ" : "ขอบคุณคร๊าบบ รบกวนแนบรูปภาพให้น้อง AI ด้วยนะครับ";
+        return isImageAttached ? "ได้รับข้อมูลรูปภาพแล้วคร๊าบบบ รบกวนส่ง Prompt มาให้ด้วยนะครับ!" : "ขอบคุณคร๊าบบ รบกวนแนบรูปภาพให้น้อง AI ด้วยนะครับ";
     }
 
     public String clearProcess(String userId){
